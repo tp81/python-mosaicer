@@ -1,6 +1,7 @@
 import tifffile as tiff
 import numpy as np
 import glob
+import argparse
 
 def ensure_3d(image):
     """Ensure the image is 3D (for grayscale images, add a channel dimension)."""
@@ -22,7 +23,7 @@ def blend_images_horizontally(image1, image2, overlap_width):
     overlap2 = image2[:, :overlap_width]
     
     # Blend the overlap regions
-    blended_overlap = (overlap1 * weight_map1 + overlap2 * weight_map2).astype(np.uint8)
+    blended_overlap = overlap1 * weight_map1 + overlap2 * weight_map2
     
     # Combine the non-overlapping regions with the blended overlap
     blended_image = np.hstack((image1[:, :-overlap_width], blended_overlap, image2[:, overlap_width:]))
@@ -43,7 +44,7 @@ def blend_images_vertically(image1, image2, overlap_height):
     overlap2 = image2[:overlap_height, :]
     
     # Blend the overlap regions
-    blended_overlap = (overlap1 * weight_map1 + overlap2 * weight_map2).astype(np.uint8)
+    blended_overlap = overlap1 * weight_map1 + overlap2 * weight_map2
     
     # Combine the non-overlapping regions with the blended overlap
     blended_image = np.vstack((image1[:-overlap_height, :], blended_overlap, image2[overlap_height:, :]))
@@ -89,10 +90,22 @@ def create_mosaic_grid(image_paths, grid_shape, overlap_percentage=10):
     if mosaic.shape[2] == 1:
         mosaic = mosaic[:, :, 0]
     
-    return mosaic
+    return mosaic.astype(np.float32)
 
-# Example usage
-image_paths = glob.glob("synthetic_images/*.tif")  # Adjust the path and file extension as needed
-grid_shape = (3, 3)  # For example, a 3x3 grid
-mosaic = create_mosaic_grid(image_paths, grid_shape, overlap_percentage=10)
-tiff.imwrite("mosaic.tif", mosaic)
+def main():
+    parser = argparse.ArgumentParser(description="Create a mosaic from a grid of images with overlap blending.")
+    parser.add_argument("image_folder", type=str, help="Folder containing the input images.")
+    parser.add_argument("grid_shape", type=str, help="Grid shape in the format NxM (e.g., 3x3).")
+    parser.add_argument("output_path", type=str, help="Path to save the output mosaic image.")
+    parser.add_argument("--overlap_percentage", type=int, default=10, help="Overlap percentage (default is 10%).")
+
+    args = parser.parse_args()
+    
+    image_paths = glob.glob(f"{args.image_folder}/*.tif")  # Adjust the path and file extension as needed
+    grid_shape = tuple(map(int, args.grid_shape.split('x')))
+    
+    mosaic = create_mosaic_grid(image_paths, grid_shape, overlap_percentage=args.overlap_percentage)
+    tiff.imwrite(args.output_path, mosaic)
+
+if __name__ == "__main__":
+    main()
