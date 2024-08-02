@@ -3,9 +3,10 @@ import numpy as np
 import glob
 
 def blend_images_horizontally(image1, image2, overlap_width):
+    channels = image1.shape[2] if len(image1.shape) == 3 else 1
     # Create weight maps for horizontal blending
-    weight_map1 = np.tile(np.linspace(1, 0, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, image1.shape[2]))
-    weight_map2 = np.tile(np.linspace(0, 1, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, image1.shape[2]))
+    weight_map1 = np.tile(np.linspace(1, 0, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, channels))
+    weight_map2 = np.tile(np.linspace(0, 1, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, channels))
     
     # Extract the overlap regions
     overlap1 = image1[:, -overlap_width:]
@@ -20,9 +21,10 @@ def blend_images_horizontally(image1, image2, overlap_width):
     return blended_image
 
 def blend_images_vertically(image1, image2, overlap_height):
+    channels = image1.shape[2] if len(image1.shape) == 3 else 1
     # Create weight maps for vertical blending
-    weight_map1 = np.tile(np.linspace(1, 0, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], image1.shape[2]))
-    weight_map2 = np.tile(np.linspace(0, 1, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], image1.shape[2]))
+    weight_map1 = np.tile(np.linspace(1, 0, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], channels))
+    weight_map2 = np.tile(np.linspace(0, 1, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], channels))
     
     # Extract the overlap regions
     overlap1 = image1[-overlap_height:, :]
