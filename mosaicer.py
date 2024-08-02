@@ -2,8 +2,17 @@ import tifffile as tiff
 import numpy as np
 import glob
 
+def ensure_3d(image):
+    """Ensure the image is 3D (for grayscale images, add a channel dimension)."""
+    if len(image.shape) == 2:
+        return image[:, :, np.newaxis]
+    return image
+
 def blend_images_horizontally(image1, image2, overlap_width):
-    channels = image1.shape[2] if len(image1.shape) == 3 else 1
+    image1 = ensure_3d(image1)
+    image2 = ensure_3d(image2)
+    channels = image1.shape[2]
+    
     # Create weight maps for horizontal blending
     weight_map1 = np.tile(np.linspace(1, 0, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, channels))
     weight_map2 = np.tile(np.linspace(0, 1, overlap_width).reshape(1, -1, 1), (image1.shape[0], 1, channels))
@@ -21,7 +30,10 @@ def blend_images_horizontally(image1, image2, overlap_width):
     return blended_image
 
 def blend_images_vertically(image1, image2, overlap_height):
-    channels = image1.shape[2] if len(image1.shape) == 3 else 1
+    image1 = ensure_3d(image1)
+    image2 = ensure_3d(image2)
+    channels = image1.shape[2]
+    
     # Create weight maps for vertical blending
     weight_map1 = np.tile(np.linspace(1, 0, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], channels))
     weight_map2 = np.tile(np.linspace(0, 1, overlap_height).reshape(-1, 1, 1), (1, image1.shape[1], channels))
@@ -58,11 +70,11 @@ def create_mosaic_grid(image_paths, grid_shape, overlap_percentage=10):
     # Process each row in the grid
     for i in range(grid_shape[0]):
         # Start with the first image in the row
-        row_mosaic = images[i * grid_shape[1]]
+        row_mosaic = ensure_3d(images[i * grid_shape[1]])
         
         # Blend each image with the previous one horizontally
         for j in range(1, grid_shape[1]):
-            row_mosaic = blend_images_horizontally(row_mosaic, images[i * grid_shape[1] + j], overlap_width)
+            row_mosaic = blend_images_horizontally(row_mosaic, ensure_3d(images[i * grid_shape[1] + j]), overlap_width)
         
         rows.append(row_mosaic)
     
@@ -72,6 +84,10 @@ def create_mosaic_grid(image_paths, grid_shape, overlap_percentage=10):
     # Blend each row with the previous one vertically
     for i in range(1, len(rows)):
         mosaic = blend_images_vertically(mosaic, rows[i], overlap_height)
+    
+    # If the input images were grayscale, remove the extra dimension
+    if mosaic.shape[2] == 1:
+        mosaic = mosaic[:, :, 0]
     
     return mosaic
 
