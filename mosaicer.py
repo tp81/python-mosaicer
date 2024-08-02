@@ -1,6 +1,7 @@
 import tifffile as tiff
 import numpy as np
 import glob
+import re
 import argparse
 
 def ensure_3d(image):
@@ -51,8 +52,14 @@ def blend_images_vertically(image1, image2, overlap_height):
     
     return blended_image
 
+def extract_number_from_filename(filename):
+    """Extract the first number found in the filename."""
+    match = re.search(r'\d+', filename.split('/')[-1])
+    return int(match.group()) if match else float('inf')
+
 def create_mosaic_grid(image_paths, grid_shape, overlap_percentage=10):
-    # Read the images
+    # Read and sort the images based on the number extracted from the filenames
+    image_paths.sort(key=extract_number_from_filename)
     images = [tiff.imread(image_path) for image_path in image_paths]
     
     # Ensure all images have the same size
