@@ -1,70 +1,70 @@
-<h1>Mosaic Image Generator</h1>
-<p>This script creates a mosaic from a grid of images with a specified overlap percentage using linear blending in the overlap regions. The script supports both grayscale and RGB images.</p>
+# Mosaic Image Generator
+This script creates a mosaic from a grid of images with a specified overlap percentage using linear blending in the overlap regions. The script supports both grayscale and RGB images.
 
-<h2>Requirements</h2>
-<p>Python 3.x</p>
-<p>tifffile</p>
-<p>numpy</p>
-<p>You can install the required Python packages using pip:</p>
-<pre><code>pip install tifffile numpy</code></pre>
+## Requirements
+  - Python 3.x
+  - tifffile
 
-<h2>Usage</h2>
-<pre><code>python create_mosaic.py &lt;image_folder&gt; &lt;grid_shape&gt; &lt;output_path&gt; [--overlap_percentage]</code></pre>
+You can install the required Python packages using pip:
+```
+pip install tifffile numpy
+```
 
-<h3>Parameters</h3>
-<ul>
-    <li><code>image_folder</code>: The folder containing the input images.</li>
-    <li><code>grid_shape</code>: The shape of the grid in the format <code>NxM</code> (e.g., <code>3x3</code>).</li>
-    <li><code>output_path</code>: The path to save the output mosaic image.</li>
-    <li><code>--overlap_percentage</code>: (Optional) The overlap percentage (default is 10%).</li>
-</ul>
+## Usage
+```
+python create_mosaic.py <image_folder> <grid_shape> <output_path> [--overlap_percentage <overlap_percentage>]
+```
 
-<h3>Example</h3>
-<pre><code>python create_mosaic.py synthetic_images 3x3 mosaic.tif --overlap_percentage 10</code></pre>
-<p>This example creates a 3x3 mosaic with 10% overlap from images in the <code>synthetic_images</code> folder and saves it as <code>mosaic.tif</code>. The images are sorted based on the numbers extracted from their filenames before creating the mosaic.</p>
+### Parameters
+  - `image_folder`: The folder containing the input images.
+  - `grid_shape`: The shape of the grid in the format `NxM` (e.g., `3x3`).
+  - `output_path`: The path to save the output mosaic image.
+  - `--overlap_percentage <overlap_percentage>`: (Optional) The overlap percentage (default is 10%).
 
-<h2>How It Works</h2>
-<ol>
-    <li><strong>Image Reading and Sorting</strong>: The script reads all <code>.tif</code> images from the specified folder and sorts them based on the numbers extracted from their filenames.</li>
-    <li><strong>Blending</strong>: It blends overlapping regions of adjacent images both horizontally and vertically using linear blending.</li>
-    <li><strong>Mosaic Creation</strong>: It assembles the images into a mosaic based on the specified grid shape and overlap percentage.</li>
-</ol>
+### Example
+```
+python create_mosaic.py synthetic_images 3x3 mosaic.tif --overlap_percentage 10
+```
+This example creates a 3x3 mosaic with 10% overlap from images in the `synthetic_images` folder and saves it as `mosaic.tif`. The images are sorted based on the numbers extracted from their filenames before creating the mosaic.
 
-<h3>Functions</h3>
-<ul>
-    <li><code>ensure_3d(image)</code>: Ensures the image is 3D (for grayscale images, adds a channel dimension).</li>
-    <li><code>blend_images_horizontally(image1, image2, overlap_width)</code>: Blends two images horizontally with a specified overlap width.</li>
-    <li><code>blend_images_vertically(image1, image2, overlap_height)</code>: Blends two images vertically with a specified overlap height.</li>
-    <li><code>extract_number_from_filename(filename)</code>: Extracts the first number found in the filename.</li>
-    <li><code>create_mosaic_grid(image_paths, grid_shape, overlap_percentage)</code>: Creates a mosaic from a grid of images with overlap blending.</li>
-</ul>
+## How It Works
+  - *Image Reading and Sorting*: The script reads all `.tif` images from the specified folder and sorts them based on the numbers extracted from their filenames.
+  - *Blending*: It blends overlapping regions of adjacent images both horizontally and vertically using linear blending.
+  - *Mosaic Creation*: It assembles the images into a mosaic based on the specified grid shape and overlap percentage.
 
-<h2>Synthetic Image Generator</h2>
-<p>The script also includes a function to generate synthetic images for testing purposes.</p>
 
-<h3>Usage</h3>
-<pre><code>python generate_synthetic_images.py &lt;output_folder&gt; &lt;grid_shape&gt; &lt;width&gt; &lt;height&gt;</code></pre>
+### Functions
+  - `ensure_3d`: Ensures the image is 3D (for grayscale images, adds a channel dimension).
+  - `blend_images_horizontally(image1, image2, overlap_width)`: Blends two images horizontally with a specified overlap width.
+  - `blend_images_vertically(image1, image2, overlap_height)`: Blends two images vertically with a specified overlap height.
+  - `extract_number_from_filename(filename)`: Extracts the first number found in the filename.
+  - `create_mosaic_grid(image_paths, grid_shape, overlap_percentage)`: Creates a mosaic from a grid of images with overlap blending.
 
-<h3>Parameters</h3>
-<ul>
-    <li><code>output_folder</code>: The folder to save the generated images.</li>
-    <li><code>grid_shape</code>: The shape of the grid in the format <code>NxM</code> (e.g., <code>3x3</code>).</li>
-    <li><code>width</code>: The width of each synthetic image.</li>
-    <li><code>height</code>: The height of each synthetic image.</li>
-</ul>
+## Synthetic Image Generator
+The script also includes a function to generate synthetic images for testing purposes.
 
-<h3>Example</h3>
-<pre><code>python generate_synthetic_images.py synthetic_images 3x3 200 200</code></pre>
-<p>This example generates a 3x3 grid of synthetic images, each with a width and height of 200 pixels, and saves them in the <code>synthetic_images</code> folder.</p>
+### Usage
+```
+python generate_synthetic_images.py <output_folder> <grid_shape> <width> <height>
+```
+### Parameters
+  - `output_folder`: The folder to save the generated images.
+  - `grid_shape`: The shape of the grid in the format `NxM` (e.g., `3x3`).
+  - `width`: The width of each synthetic image.
+  - `height`: The height of each synthetic image.
 
-<h3>How It Works</h3>
-<ol>
-    <li>The script generates synthetic images with random colors.</li>
-    <li>The images are saved in the specified output folder with filenames that include their position in the grid.</li>
-</ol>
+### Example
+```
+python generate_synthetic_images.py synthetic_images 3x3 200 200
+```
+This example generates a 3x3 grid of synthetic images, each with a width and height of 200 pixels, and saves them in the `synthetic_images` folder.
 
-<h2>License</h2>
-<p>This project is licensed under the MIT License. See the <code>LICENSE</code> file for details.</p>
+### How It Works
+  - The script generates synthetic images with random colors.
+  - The images are saved in the specified output folder with filenames that include their position in the grid.
 
-<h2>Acknowledgments</h2>
-<p>This script uses the <code>tifffile</code> and <code>numpy</code> libraries.</p>
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Acknowledgments
+This script uses the `tifffile` and `numpy` libraries.
